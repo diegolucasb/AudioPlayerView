@@ -1,4 +1,4 @@
-#AudioPlayerView
+#AudioPlayerView - Forked from HugoMatilla/AudioPlayerView
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AudioPlayerView-green.svg?style=true)](https://android-arsenal.com/details/1/3140)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
@@ -30,7 +30,7 @@ Include the Gradle dependency from `jitpack`
 
     dependencies {
         ...
-        compile 'com.github.HugoMatilla:AudioPlayerView:v1.0.1'
+        compile 'com.github.diegolucasb:AudioPlayerView:v1.0.1'
     }
 ```
 
@@ -91,6 +91,37 @@ There are 3 callbacks:
 You can use icons or texts to show the current state of the view: loading, playing or stopped.
 
 The AudioPlayerView extends TextView, so you can do all of the things you would do in a TextView with some considerations.
+
+Add SeekBar and TextView to see audio's current progress:
+```xml
+
+           <com.hugomatilla.audioplayerview.AudioPlayerView
+                android:id="@+id/playProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:seekBar="@+id/seekBar"
+                app:runTimeView="@+id/textViewRunTime"
+                android:padding="10dp"
+                android:textColor="@android:color/white"
+                android:textSize="40dp"/>
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_below="@+id/playProgress"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/textViewRunTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="00:00"
+                android:layout_toRightOf="@+id/progressBar"
+                android:layout_alignBottom="@+id/progressBar"
+```
 
 ### Icons
 For the icons, AudioPlayerView uses icon fonts. When the audio is ready and playing it shows a stop icon, when is finished or it was never started it shows a play button and when is preparing it shows a spinner (spinning).
