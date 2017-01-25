@@ -3,4 +3,8 @@
     <string name="loadingIcon">&#xe801;</string>
     <string name="playIcon">&#xe802;</string>
     <string name="stopIcon">&#xe803;</string>
+
+    <string name="loadingIcon1">&#xe839;</string>
+    <string name="playIcon1">&#xe802;</string>
+    <string name="pauseIcon1">&#xe803;</string>
 </resources>

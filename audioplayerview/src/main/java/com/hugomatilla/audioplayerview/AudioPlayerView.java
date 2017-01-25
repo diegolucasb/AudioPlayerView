@@ -2,6 +2,9 @@ package com.hugomatilla.audioplayerview;
 
 /**
  * Created by hugomatilla on 10/02/16.
+ *
+ * Changed by Lucas Diego on 25/01/17
+ * Add reference attributes to seekbar and textview to show current audio time
  */
 
 import android.annotation.TargetApi;
@@ -11,27 +14,66 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class AudioPlayerView extends TextView {
-    private static final String NULL_PARAMETER_ERROR = "`stopText`, `playText` and `loadingText`" +
+
+    private static final long AUDIO_PROGRESS_UPDATE_TIME = 100;
+    public static final String TIME_FORMAT = "%02d:%02d";
+
+    private static final String NULL_PARAMETER_ERROR = "`pauseText`, `playText` and `loadingText`" +
             " must have some value, if `useIcons` is set to false. Set `useIcons` to true, or add strings to stopText`, " +
             "`playText` and `loadingText` in the AudioPlayerView.xml";
     private Context context;
     private MediaPlayer mediaPlayer;
     private String playText;
-    private String stopText;
+    private String pauseText;
     private String loadingText;
     private String url;
+
+    private SeekBar seekBar;
+    private Handler progressUpdateHandler;
+
+    //to see audio current time progress
+    private TextView runTimeTextView;
+
     private boolean useIcons;
     private boolean audioReady;
     private boolean usesCustomIcons;
+
+    private int resourceSeekBar;
+    private int resourceRunTimeViewId;
+
+    private Runnable updateProgressBar = new Runnable() {
+        @Override
+        public void run() {
+            //if it gets here, it means either seekbar or textviewRunTime is not null
+            if (progressUpdateHandler != null && mediaPlayer.isPlaying()){
+
+                int curreTime = mediaPlayer.getCurrentPosition();
+                if(seekBar != null){
+                    seekBar.setProgress(curreTime);
+                }
+
+                updateAudioRunTime(curreTime);
+
+                //call it again
+                progressUpdateHandler.postDelayed(this, AUDIO_PROGRESS_UPDATE_TIME);
+            }
+
+        }
+    };
+
 
     //Callbacks
     public interface OnAudioPlayerViewListener {
@@ -92,19 +134,38 @@ public class AudioPlayerView extends TextView {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AudioPlayerTextView, 0, 0);
 
         try {
-            stopText = a.getString(R.styleable.AudioPlayerTextView_stopText);
+            pauseText = a.getString(R.styleable.AudioPlayerTextView_pauseText);
             playText = a.getString(R.styleable.AudioPlayerTextView_playText);
             loadingText = a.getString(R.styleable.AudioPlayerTextView_loadingText);
             useIcons = a.getBoolean(R.styleable.AudioPlayerTextView_useIcons, true);
 
-            if ((stopText != null && playText != null && loadingText != null) && useIcons)
+            resourceSeekBar = a.getResourceId(R.styleable.AudioPlayerTextView_seekBar, 0);
+            resourceRunTimeViewId = a.getResourceId(R.styleable.AudioPlayerTextView_runTimeView, 0);
+
+            if ((pauseText != null && playText != null && loadingText != null) && useIcons)
                 usesCustomIcons = true;
-            else if ((stopText == null || playText == null || loadingText == null) && !useIcons)
+            else if ((pauseText == null || playText == null || loadingText == null) && !useIcons)
                 throw new UnsupportedOperationException(NULL_PARAMETER_ERROR);
 
         } finally {
             a.recycle();
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        //if user has referred to a seekbar
+        if(resourceSeekBar != 0){
+            seekBar = (SeekBar) getRootView().findViewById(resourceSeekBar);
+        }
+
+        if(resourceRunTimeViewId != 0){
+            runTimeTextView = (TextView) getRootView().findViewById(resourceRunTimeViewId);
+        }
+
+
     }
 
     //Implementation
@@ -123,11 +184,12 @@ public class AudioPlayerView extends TextView {
 
     private void setUpFont() {
         if (!usesCustomIcons) {
-            Typeface iconFont = Typeface.createFromAsset(context.getAssets(), "audio-player-view-font.ttf");
+//            Typeface iconFont = Typeface.createFromAsset(context.getAssets(), "audio-player-view-font.ttf");
+            Typeface iconFont = Typeface.createFromAsset(context.getAssets(), "audio-player-view-font_opt1.ttf");
             setTypeface(iconFont);
-            playText = getResources().getString(R.string.playIcon);
-            stopText = getResources().getString(R.string.stopIcon);
-            loadingText = getResources().getString(R.string.loadingIcon);
+            playText = getResources().getString(R.string.playIcon1);
+            pauseText = getResources().getString(R.string.pauseIcon1);
+            loadingText = getResources().getString(R.string.loadingIcon1);
         }
     }
 
@@ -136,6 +198,7 @@ public class AudioPlayerView extends TextView {
 
         public void onClick(View v) {
             try {
+                Log.i("AUDIO", "onCLick");
                 toggleAudio();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -144,20 +207,46 @@ public class AudioPlayerView extends TextView {
     };
 
     public void toggleAudio() throws IOException {
+        Log.i("AUDIO", "tootgleAudio");
+
         if (mediaPlayer != null && mediaPlayer.isPlaying())
-            stop();
+            pause();
         else
             play();
     }
 
     private void play() throws IOException {
         // Todo check what happens after second time loading
+        Log.i("AUDIO", "play");
         if (!audioReady) {
 
             mediaPlayer = new MediaPlayer();
 
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
+
+            progressUpdateHandler = new Handler();
+            updateAudioRunTime(0);
+
+            if(seekBar != null){
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        mediaPlayer.seekTo(seekBar.getProgress());
+                        updateAudioRunTime(seekBar.getProgress());
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+            }
 
             prepareAsync();
 
@@ -169,14 +258,16 @@ public class AudioPlayerView extends TextView {
     }
 
     private void prepareAsync() {
+        Log.i("AUDIO", "prepareAsync");
         mediaPlayer.prepareAsync();
         setTextLoading();
         sendCallbackAudioPreparing();
     }
 
     private void playAudio() {
+        progressUpdateHandler.postDelayed(updateProgressBar, AUDIO_PROGRESS_UPDATE_TIME);
         mediaPlayer.start();
-        setText(stopText);
+        setText(pauseText);
     }
 
 
@@ -184,6 +275,14 @@ public class AudioPlayerView extends TextView {
 
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
+            Log.i("AUDIO", "onPrepared");
+
+            if(seekBar != null){
+                long finalTime = mediaPlayer.getDuration();
+                seekBar.setMax((int) finalTime);
+                seekBar.setProgress(0);
+            }
+
             playAudio();
             audioReady = true;
             clearAnimation();
@@ -194,6 +293,13 @@ public class AudioPlayerView extends TextView {
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
+            Log.i("AUDIO", "onCompletion");
+
+            if(seekBar != null){
+                seekBar.setProgress(0);
+                mediaPlayer.seekTo(0);
+            }
+
             setText(playText);
             sendCallbackAudioFinished();
         }
@@ -201,30 +307,52 @@ public class AudioPlayerView extends TextView {
 
 
     private void setTextLoading() {
+        Log.i("AUDIO", "setTExtLoading");
         setText(loadingText);
         if (useIcons)
             startAnimation();
     }
 
     private void startAnimation() {
+        Log.i("AUDIO", "startAnimation");
         final Animation rotation = AnimationUtils.loadAnimation(context, R.anim.rotate_indefinitely);
         this.startAnimation(rotation);
     }
 
-    private void stop() {
+    private void pause() {
+        Log.i("AUDIO", "pause");
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            mediaPlayer.seekTo(0);
+//            mediaPlayer.seekTo(0);
             setText(playText);
         }
     }
 
     public void destroy() {
+        Log.i("AUDIO", "destroy");
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
             audioReady = false;
         }
+    }
+
+    private void updateAudioRunTime(int currentTime){
+        if(runTimeTextView == null || currentTime < 0){
+            return;
+        }
+
+        StringBuilder playbackStr = new StringBuilder();
+        // set the current time
+        // its ok to show 00:00 in the UI
+        playbackStr.append(
+                String.format(
+                        TIME_FORMAT,
+                        TimeUnit.MILLISECONDS.toMinutes((long) currentTime),
+                        TimeUnit.MILLISECONDS.toSeconds((long) currentTime) - TimeUnit.MINUTES.toSeconds(
+                                TimeUnit.MILLISECONDS.toMinutes((long) currentTime))));
+
+        runTimeTextView.setText(playbackStr);
     }
 
 

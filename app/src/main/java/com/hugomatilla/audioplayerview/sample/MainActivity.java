@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     String url = "http://www.freesound.org/data/previews/137/137227_1735491-lq.mp3";
     private View spinner;
-    private AudioPlayerView audioPlayerView, audioPlayerViewText, audioPlayerViewCustomFont;
+    private AudioPlayerView audioPlayerView, audioPlayProgress, audioPlayerViewText, audioPlayerViewCustomFont;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        audioPlayProgress = (AudioPlayerView) findViewById(R.id.playProgress);
+        audioPlayProgress.withUrl(url);
+
         audioPlayerViewText = (AudioPlayerView) findViewById(R.id.playText);
         audioPlayerViewText.withUrl(url);
 
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         audioPlayerView.destroy();
+        audioPlayProgress.destroy();
         audioPlayerViewText.destroy();
         audioPlayerViewCustomFont.destroy();
         super.onDestroy();
