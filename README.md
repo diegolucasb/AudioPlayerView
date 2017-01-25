@@ -9,7 +9,7 @@ AudioPlayerView is an Android view that loads audio from an url and have basic p
 
 It makes use of the Android [MediaPlayer](http://developer.android.com/intl/es/reference/android/media/MediaPlayer.html) library.
 
-![alt text](./art/AudioPlayerView-Sample1.gif)  
+![alt text](./art/sample.gif)  
 
 _Unfortunately this gif doesn't play audio :) check the sample app to hear it._
 
