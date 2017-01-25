@@ -228,8 +228,6 @@ public class AudioPlayerView extends TextView {
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        mediaPlayer.seekTo(seekBar.getProgress());
-                        updateAudioRunTime(seekBar.getProgress());
                     }
 
                     @Override
@@ -239,7 +237,8 @@ public class AudioPlayerView extends TextView {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-
+                        mediaPlayer.seekTo(seekBar.getProgress());
+                        updateAudioRunTime(seekBar.getProgress());
                     }
                 });
             }
