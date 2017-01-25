@@ -198,7 +198,6 @@ public class AudioPlayerView extends TextView {
 
         public void onClick(View v) {
             try {
-                Log.i("AUDIO", "onCLick");
                 toggleAudio();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -207,7 +206,6 @@ public class AudioPlayerView extends TextView {
     };
 
     public void toggleAudio() throws IOException {
-        Log.i("AUDIO", "tootgleAudio");
 
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             pause();
@@ -216,8 +214,6 @@ public class AudioPlayerView extends TextView {
     }
 
     private void play() throws IOException {
-        // Todo check what happens after second time loading
-        Log.i("AUDIO", "play");
         if (!audioReady) {
 
             mediaPlayer = new MediaPlayer();
@@ -258,7 +254,6 @@ public class AudioPlayerView extends TextView {
     }
 
     private void prepareAsync() {
-        Log.i("AUDIO", "prepareAsync");
         mediaPlayer.prepareAsync();
         setTextLoading();
         sendCallbackAudioPreparing();
@@ -275,7 +270,6 @@ public class AudioPlayerView extends TextView {
 
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            Log.i("AUDIO", "onPrepared");
 
             if(seekBar != null){
                 long finalTime = mediaPlayer.getDuration();
@@ -293,7 +287,6 @@ public class AudioPlayerView extends TextView {
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            Log.i("AUDIO", "onCompletion");
 
             if(seekBar != null){
                 seekBar.setProgress(0);
@@ -307,20 +300,17 @@ public class AudioPlayerView extends TextView {
 
 
     private void setTextLoading() {
-        Log.i("AUDIO", "setTExtLoading");
         setText(loadingText);
         if (useIcons)
             startAnimation();
     }
 
     private void startAnimation() {
-        Log.i("AUDIO", "startAnimation");
         final Animation rotation = AnimationUtils.loadAnimation(context, R.anim.rotate_indefinitely);
         this.startAnimation(rotation);
     }
 
     private void pause() {
-        Log.i("AUDIO", "pause");
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
 //            mediaPlayer.seekTo(0);
@@ -329,7 +319,6 @@ public class AudioPlayerView extends TextView {
     }
 
     public void destroy() {
-        Log.i("AUDIO", "destroy");
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
