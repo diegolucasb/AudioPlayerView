@@ -58,7 +58,7 @@ public class AudioPlayerView extends TextView {
         @Override
         public void run() {
             //if it gets here, it means either seekbar or textviewRunTime is not null
-            if (progressUpdateHandler != null && mediaPlayer.isPlaying()){
+            if (progressUpdateHandler != null && mediaPlayer != null && mediaPlayer.isPlaying()){
 
                 int curreTime = mediaPlayer.getCurrentPosition();
                 if(seekBar != null){
@@ -74,7 +74,6 @@ public class AudioPlayerView extends TextView {
         }
     };
 
-
     //Callbacks
     public interface OnAudioPlayerViewListener {
         void onAudioPreparing();
@@ -82,12 +81,20 @@ public class AudioPlayerView extends TextView {
         void onAudioReady();
 
         void onAudioFinished();
+
+        void onError(Exception e);
     }
 
     private OnAudioPlayerViewListener listener;
 
     public void setOnAudioPlayerViewListener(OnAudioPlayerViewListener listener) {
         this.listener = listener;
+    }
+
+    private void sendCallbackError(Exception e){
+        if(listener != null){
+            listener.onError(e);
+        }
     }
 
     private void sendCallbackAudioFinished() {
@@ -247,6 +254,7 @@ public class AudioPlayerView extends TextView {
 
             mediaPlayer.setOnPreparedListener(onPreparedListener);
             mediaPlayer.setOnCompletionListener(onCompletionListener);
+            mediaPlayer.setOnErrorListener(onErrorListener);
 
         } else
             playAudio();
@@ -264,6 +272,40 @@ public class AudioPlayerView extends TextView {
         setText(pauseText);
     }
 
+    private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+
+            String messageError = "";
+            switch (what){
+                case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    messageError = context.getString(R.string.media_error_unknown);
+                    break;
+                case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                    messageError = context.getString(R.string.media_error_server_died);
+                    break;
+            }
+
+            switch (extra){
+                case MediaPlayer.MEDIA_ERROR_IO:
+                    messageError += "\n" + context.getString(R.string.media_error_io);
+                    break;
+                case MediaPlayer.MEDIA_ERROR_MALFORMED:
+                    messageError += "\n" + context.getString(R.string.media_error_malformed);
+                    break;
+                case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                    messageError += "\n" + context.getString(R.string.media_error_unsupported);
+                    break;
+                case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+                    messageError += "\n" + context.getString(R.string.media_error_timed_out);
+                    break;
+            }
+
+            sendCallbackError(new Exception(messageError));
+            //True if the method handled the error, false if it didn't. Returning false, or not having an OnErrorListener at all, will cause the OnCompletionListener to be called.
+            return true;
+        }
+    };
 
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
 

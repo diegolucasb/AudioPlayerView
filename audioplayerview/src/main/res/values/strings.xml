@@ -7,4 +7,14 @@
     <string name="loadingIcon1">&#xe839;</string>
     <string name="playIcon1">&#xe802;</string>
     <string name="pauseIcon1">&#xe803;</string>
+
+    <string name="media_error_unknown">Media unknown</string>
+    <string name="media_error_server_died">Server unavailable</string>
+    <string name="media_error_io">Audio file not found</string>
+    <string name="media_error_malformed">Invalid media format</string>
+    <string name="media_error_unsupported">Unsupported media format</string>
+    <string name="media_error_timed_out">Timed out.</string>
+
+
+
 </resources>

@@ -40,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
             public void onAudioFinished() {
                 Toast.makeText(getBaseContext(), "Audio finished callback", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         audioPlayProgress = (AudioPlayerView) findViewById(R.id.playProgress);
