@@ -67,6 +67,7 @@ There are 3 callbacks:
 
 `onAudioFinished`: When the audio has finished playing and is stopped.
 
+`onError`: When something wrong happens. When this method is thrown `onAudioFinished` is not called.
 ```java
     
     audioPlayerView.setOnAudioPlayerViewListener(new AudioPlayerView.OnAudioPlayerViewListener() {
@@ -83,6 +84,11 @@ There are 3 callbacks:
             @Override
             public void onAudioFinished() {
 
+            }
+
+            @Override
+            public void onError(Exception e) {
+                
             }
         });
 ```
