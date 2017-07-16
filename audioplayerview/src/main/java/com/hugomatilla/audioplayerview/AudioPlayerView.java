@@ -7,6 +7,7 @@ package com.hugomatilla.audioplayerview;
  * Add reference attributes to seekbar and textview to show current audio time
  */
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +17,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,6 +26,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+@SuppressLint("AppCompatCustomView")
 public class AudioPlayerView extends TextView {
 
     private static final long AUDIO_PROGRESS_UPDATE_TIME = 100;
@@ -157,6 +158,22 @@ public class AudioPlayerView extends TextView {
         } finally {
             a.recycle();
         }
+    }
+
+    public void setSeekBar(SeekBar seekBar){
+        this.seekBar = seekBar;
+    }
+
+    public SeekBar getSeekBar(){
+        return this.seekBar;
+    }
+
+    public void setRunTimeTextView(TextView textView){
+        this.runTimeTextView = textView;
+    }
+
+    public TextView getRunTimeTextView(){
+        return this.runTimeTextView;
     }
 
     @Override

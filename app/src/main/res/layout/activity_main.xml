@@ -87,6 +87,47 @@
         </RelativeLayout>
 
         <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="W/ SeekBar and TextView added programatically"/>
+
+        <RelativeLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:background="@android:color/holo_red_dark"
+                     android:textSize="40dp">
+
+            <com.hugomatilla.audioplayerview.AudioPlayerView
+                android:id="@+id/playProgressProg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textColor="@android:color/white"
+                android:textSize="40dp"/>
+
+            <SeekBar
+                android:id="@+id/progressBar1"
+                android:layout_below="@+id/playProgressProg"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/textViewRunTime1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="00:00"
+                android:layout_toRightOf="@+id/progressBar1"
+                android:layout_alignBottom="@+id/progressBar1"
+                />
+
+        </RelativeLayout>
+
+
+
+        <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="20dp"
                   android:gravity="center"

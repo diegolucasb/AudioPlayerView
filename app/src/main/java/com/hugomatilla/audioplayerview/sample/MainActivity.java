@@ -4,6 +4,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hugomatilla.audioplayerview.AudioPlayerView;
@@ -12,7 +14,12 @@ public class MainActivity extends AppCompatActivity {
 
     String url = "http://www.freesound.org/data/previews/137/137227_1735491-lq.mp3";
     private View spinner;
-    private AudioPlayerView audioPlayerView, audioPlayProgress, audioPlayerViewText, audioPlayerViewCustomFont;
+    private AudioPlayerView
+            audioPlayerView,
+            audioPlayProgress,
+            audioPlayProgressProgramatically,
+            audioPlayerViewText,
+            audioPlayerViewCustomFont;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
         audioPlayProgress = (AudioPlayerView) findViewById(R.id.playProgress);
         audioPlayProgress.withUrl(url);
 
+        audioPlayProgressProgramatically = (AudioPlayerView) findViewById(R.id.playProgressProg);
+        SeekBar seekBar = (SeekBar) findViewById(R.id.progressBar1);
+        audioPlayProgressProgramatically.setSeekBar(seekBar);
+
+        TextView textViewRunTime = (TextView) findViewById(R.id.textViewRunTime1);
+        audioPlayProgressProgramatically.setRunTimeTextView(textViewRunTime);
+        audioPlayProgressProgramatically.withUrl(url);
+
         audioPlayerViewText = (AudioPlayerView) findViewById(R.id.playText);
         audioPlayerViewText.withUrl(url);
 
@@ -58,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
         Typeface iconFont = Typeface.createFromAsset(getAssets(), "audio-player-view-font-custom.ttf");
         audioPlayerViewCustomFont.setTypeface(iconFont);
         audioPlayerViewCustomFont.withUrl(url);
+
+
+
     }
 
     @Override
