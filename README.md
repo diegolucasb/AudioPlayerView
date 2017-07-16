@@ -13,7 +13,7 @@ It makes use of the Android [MediaPlayer](http://developer.android.com/intl/es/r
 
 _Unfortunately this gif doesn't play audio :) check the sample app to hear it._
 
-## Update from 1.0.1 to 1.0.2
+## Update from 1.0.1 to 1.0.4
 Change the package repository to jitpack as explained in next section.
 ## Include
 
@@ -30,7 +30,7 @@ Include the Gradle dependency from `jitpack`
 
     dependencies {
         ...
-        compile 'com.github.diegolucasb:AudioPlayerView:1.0.2'
+        compile 'com.github.diegolucasb:AudioPlayerView:1.0.4'
     }
 ```
 
@@ -67,6 +67,7 @@ There are 3 callbacks:
 
 `onAudioFinished`: When the audio has finished playing and is stopped.
 
+`onError`: When something wrong happens. When this method is thrown `onAudioFinished` is not called.
 ```java
     
     audioPlayerView.setOnAudioPlayerViewListener(new AudioPlayerView.OnAudioPlayerViewListener() {
@@ -83,6 +84,11 @@ There are 3 callbacks:
             @Override
             public void onAudioFinished() {
 
+            }
+
+            @Override
+            public void onError(Exception e) {
+                
             }
         });
 ```
