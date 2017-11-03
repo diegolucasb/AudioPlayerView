@@ -52,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onAudioPause() {
+
+            }
+
+            @Override
+            public void onAudioPlay() {
+
+            }
         });
 
         audioPlayProgress = (AudioPlayerView) findViewById(R.id.playProgress);
