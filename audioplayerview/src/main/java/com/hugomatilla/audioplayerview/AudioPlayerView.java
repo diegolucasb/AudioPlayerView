@@ -84,6 +84,10 @@ public class AudioPlayerView extends TextView {
         void onAudioFinished();
 
         void onError(Exception e);
+
+        void onAudioPause();
+
+        void onAudioPlay();
     }
 
     private OnAudioPlayerViewListener listener;
@@ -111,6 +115,16 @@ public class AudioPlayerView extends TextView {
     private void sendCallbackAudioPreparing() {
         if (listener != null)
             listener.onAudioPreparing();
+    }
+
+    private void sendCallbackAudioPlay() {
+        if (listener != null)
+            listener.onAudioPlay();
+    }
+
+    private void sendCallbackAudioPause() {
+        if (listener != null)
+            listener.onAudioPause();
     }
 
     //Constructors
@@ -287,6 +301,8 @@ public class AudioPlayerView extends TextView {
         progressUpdateHandler.postDelayed(updateProgressBar, AUDIO_PROGRESS_UPDATE_TIME);
         mediaPlayer.start();
         setText(pauseText);
+
+        sendCallbackAudioPlay();
     }
 
     private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
@@ -335,10 +351,11 @@ public class AudioPlayerView extends TextView {
                 seekBar.setProgress(0);
             }
 
-            playAudio();
             audioReady = true;
             clearAnimation();
             sendCallbackAudioReady();
+
+            playAudio();
         }
     };
 
@@ -372,7 +389,9 @@ public class AudioPlayerView extends TextView {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
 //            mediaPlayer.seekTo(0);
+
             setText(playText);
+            sendCallbackAudioPause();
         }
     }
 
